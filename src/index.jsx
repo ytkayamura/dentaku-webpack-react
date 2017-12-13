@@ -39,18 +39,19 @@ class App extends Component {
       resultValue: 0,  // 結果 兼 左辺
       inputValue: 0,
       showingResult: false,
-      culcResult: (state) => state.inputValue,
+      operand: '',
       seqOpe: false,   // 演算キー連続入力
       afterResult: false,
     };
     this.onNumClick = this.onNumClick.bind(this);
-    this.ope = this.ope.bind(this);
+    this.setOpe = this.setOpe.bind(this);
     this.plus = this.plus.bind(this);
     this.minus = this.minus.bind(this);
     this.multi = this.multi.bind(this);
     this.div = this.div.bind(this);
     this.result = this.result.bind(this);
     this.clear = this.clear.bind(this);
+    this.culc = this.culc.bind(this);
   }
   onNumClick(n) {
     const state = this.state;
@@ -63,39 +64,53 @@ class App extends Component {
     };
     this.setState(resState);   // 再描画
   }
-  ope(func) {
+  culc() {
+    const state = this.state;
+    switch(state.operand) {
+      case '+':
+        return state.resultValue + state.inputValue;
+      case '-':
+        return state.resultValue - state.inputValue;
+      case '*':
+        return state.resultValue * state.inputValue;
+      case '/':
+        return 1.0 * state.resultValue / state.inputValue;
+    }
+    return state.inputValue;
+  }
+  setOpe(operand) {
     const state = this.state;
     const resState = {
       ...state,
-      resultValue: state.seqOpe ? state.resultValue : state.culcResult(state),
+      resultValue: state.seqOpe ? state.resultValue : this.culc(),
       inputValue: 0,
       showingResult: true,
-      culcResult: func,
+      operand: operand,
       seqOpe: true,
       afterResult: false,
     };
     this.setState(resState);   // 再描画
   }
   plus() {
-    this.ope(state => state.resultValue + state.inputValue);
+    this.setOpe('+');
   }
   minus() {
-    this.ope(state => state.resultValue - state.inputValue);
+    this.setOpe('-');
   }
   multi() {
-    this.ope(state => state.resultValue * state.inputValue);
+    this.setOpe('*');
   }
   div() {
-    this.ope(state => 1.0 * state.resultValue / state.inputValue);
+    this.setOpe('/');
   }
   result() {
     const state = this.state;
     const resState = {
       ...state,
-      resultValue: state.culcResult(state),
-      inputValue: state.culcResult(state),
+      resultValue: this.culc(),
+      inputValue: this.culc(),
       showingResult: true,
-      culcResult: (state) => state.inputValue,
+      operand: '',
       seqOpe: false,
       afterResult: true,
     };
@@ -108,7 +123,7 @@ class App extends Component {
       resultValue: 0,
       inputValue: 0,
       showingResult: true,
-      culcResult: (state) => state.inputValue,
+      operand: '',
       seqOpe: false,
       afterResult: false,
     };
@@ -146,6 +161,5 @@ class App extends Component {
 /*
  * 初期処理
  */
-const render = () => ReactDOM.render(<App/>, document.getElementById('app'));
-render();
+ReactDOM.render(<App/>, document.getElementById('app'));
 
